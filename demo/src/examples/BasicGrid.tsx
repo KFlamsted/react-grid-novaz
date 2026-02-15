@@ -14,6 +14,12 @@ export const BasicGrid: React.FC = () => {
         <Grid size={6}>
           <div className="demo-box">Right Column (6/12)</div>
         </Grid>
+        <Grid size={6}>
+          <div className="demo-box">Left Column (6/12)</div>
+        </Grid>
+        <Grid size={6}>
+          <div className="demo-box">Right Column (6/12)</div>
+        </Grid>
       </Grid>
     </section>
   )
