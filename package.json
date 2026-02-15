@@ -1,6 +1,6 @@
 {
   "name": "@kflamsted/react-simple-grid",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simple, lightweight React grid component inspired by Material UI's Grid. Uses CSS Flexbox for responsive layouts.",
   "publishConfig": {
     "access": "public"

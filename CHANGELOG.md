@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.1] - 2026-02-15
+- **Spacing overflow issue resolved**: Resolving spacing overflow issue by using padding instead of gap
+
 ## [1.0.0] - 2026-02-12
 
 ### Initial Release

@@ -7,6 +7,15 @@ import type {
   GridItemProps,
 } from "./types"
 
+// Context to pass spacing values from container to items
+interface GridContextValue {
+  spacing?: number
+  rowSpacing?: number
+  columnSpacing?: number
+}
+
+const GridContext = React.createContext<GridContextValue>({})
+
 /**
  * MUI-compatible spacing multiplier (8px per unit)
  */
@@ -133,35 +142,32 @@ export const Grid: React.FC<GridProps> = (props) => {
       flexWrap: wrap,
       justifyContent,
       alignItems,
-      gap:
-        spacing !== undefined
-          ? `${spacingValue * SPACING_MULTIPLIER}px`
-          : undefined,
-      rowGap:
-        rowSpacing !== undefined
-          ? `${rowSpacingValue * SPACING_MULTIPLIER}px`
-          : undefined,
-      columnGap:
-        columnSpacing !== undefined
-          ? `${columnSpacingValue * SPACING_MULTIPLIER}px`
-          : undefined,
       width: "100%",
       boxSizing: "border-box",
       ...style,
     }
 
     return (
-      <div
-        className={`rg-container ${className || ""}`}
-        style={containerStyle}
-        {...restProps}
+      <GridContext.Provider
+        value={{
+          spacing: spacingValue || undefined,
+          rowSpacing: rowSpacingValue || undefined,
+          columnSpacing: columnSpacingValue || undefined,
+        }}
       >
-        {children}
-      </div>
+        <div
+          className={`rg-container ${className || ""}`}
+          style={containerStyle}
+          {...restProps}
+        >
+          {children}
+        </div>
+      </GridContext.Provider>
     )
   }
 
-  // Item component
+  // Item component - consume spacing from parent container context
+  const contextSpacing = React.useContext(GridContext)
   const sizeValue = getResponsiveValue(size, breakpoint)
   const offsetValue = getResponsiveValue(offset, breakpoint)
 
@@ -181,12 +187,39 @@ export const Grid: React.FC<GridProps> = (props) => {
         ? `${((offsetValue as number) / columnsNum) * 100}%`
         : undefined
 
+  // Calculate padding for spacing - applied as half on each side
+  // This creates the gap effect between adjacent items
+  const calcSpacing = contextSpacing.spacing
+  const calcRowSpacing = contextSpacing.rowSpacing
+  const calcColSpacing = contextSpacing.columnSpacing
+
+  // Use explicit row/column spacing if provided, otherwise fall back to general spacing
+  const horizontalSpacing =
+    calcColSpacing !== undefined
+      ? calcColSpacing
+      : calcSpacing !== undefined
+        ? calcSpacing
+        : 0
+  const verticalSpacing =
+    calcRowSpacing !== undefined
+      ? calcRowSpacing
+      : calcSpacing !== undefined
+        ? calcSpacing
+        : 0
+
+  const paddingX = (horizontalSpacing * SPACING_MULTIPLIER) / 2
+  const paddingY = (verticalSpacing * SPACING_MULTIPLIER) / 2
+
   const itemStyle: React.CSSProperties = {
     flexBasis,
     maxWidth,
     flexGrow: 0,
     flexShrink: 0,
     marginLeft: marginLeft,
+    paddingTop: paddingY ? `${paddingY}px` : undefined,
+    paddingBottom: paddingY ? `${paddingY}px` : undefined,
+    paddingLeft: paddingX ? `${paddingX}px` : undefined,
+    paddingRight: paddingX ? `${paddingX}px` : undefined,
     boxSizing: "border-box",
     ...style,
   }
